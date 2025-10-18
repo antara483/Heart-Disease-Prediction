@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assessment Results - HeartGuard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-gradient-to-br from-green-50 via-white to-blue-50 min-h-screen">
+   
+    <nav class="bg-white/80 backdrop-blur-lg border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center py-4">
+                <a href="/" class="flex items-center space-x-2 text-xl font-bold bg-gradient-to-r from-red-600 to-pink-600 bg-clip-text text-transparent">
+                    <i class="fas fa-heartbeat"></i>
+                    <span>HeartGuard</span>
+                </a>
+                <span class="text-sm text-gray-600">Assessment Complete</span>
+            </div>
+        </div>
+    </nav>
+    <!-- Add this after the nav bar and before the main results -->
+<div class="max-w-6xl mx-auto px-4 py-4">
+    <div class="bg-white/80 backdrop-blur-lg rounded-2xl p-6 border border-gray-200">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center">
+            <div>
+                <h2 class="text-2xl font-bold text-gray-800">{{ patient_name }}</h2>
+                {% if patient_id %}
+                <p class="text-gray-600">Patient ID: {{ patient_id }}</p>
+                {% endif %}
+                <p class="text-sm text-gray-500">Assessment Date: {{ assessment_date }}</p>
+                <p class="text-sm text-gray-500">Report ID: {{ report_id }}</p>
+            </div>
+            <!-- <div class="mt-4 md:mt-0 flex gap-3">
+                <button onclick="window.print()" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition flex items-center">
+                    <i class="fas fa-print mr-2"></i> Print Report
+                </button>
+                <button onclick="downloadPDF()" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition flex items-center">
+                    <i class="fas fa-file-pdf mr-2"></i> Save as PDF
+                </button>
+            </div> -->
+        </div>
+    </div>
+</div>
+    <!-- Error Banner -->
+    {% if error %}
+    <div class="max-w-4xl mx-auto px-4 py-4">
+        <div class="bg-red-50 border border-red-200 rounded-2xl p-6 animate-pulse">
+            <div class="flex items-center">
+                <i class="fas fa-exclamation-triangle text-red-500 text-xl mr-3"></i>
+                <div>
+                    <h4 class="font-semibold text-red-800">Assessment Notice</h4>
+                    <p class="text-red-700 text-sm mt-1">{{ error }}</p>
+                    <p class="text-red-600 text-xs mt-2">Some features may be limited. Basic health insights are still provided.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+    <div id="pdf-content" class="max-w-6xl mx-auto px-4 py-8">
+    <div class="max-w-6xl mx-auto px-4 py-8">
+
+        <div class="bg-white/80 backdrop-blur-lg shadow-2xl rounded-3xl p-8 border border-white/20">
+      
+            <!-- Main Results Header -->
+            <div class="text-center mb-8">
+                <div class="w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-6 
+                    {% if prediction == 'Yes' %}bg-red-100 text-red-600{% else %}bg-green-100 text-green-600{% endif %}">
+                    <i class="fas {% if prediction == 'Yes' %}fa-exclamation-triangle{% else %}fa-check-circle{% endif %} text-4xl"></i>
+                </div>
+                <h1 class="text-4xl font-bold mb-4 
+                    {% if prediction == 'Yes' %}text-red-600{% else %}text-green-600{% endif %}">
+                    {{ message }}
+                </h1>
+            </div>
+
+            <!-- Key Metrics Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                <div class="bg-gradient-to-br from-blue-50 to-blue-100 rounded-2xl p-6 text-center border border-blue-200">
+                    <div class="text-2xl font-bold text-gray-800 mb-2">{{ prediction }}</div>
+                    <div class="text-sm text-blue-600 font-semibold">
+                        <i class="fas fa-diagnoses mr-1"></i>
+                        Prediction
+                    </div>
+                </div>
+                
+                <div class="bg-gradient-to-br from-purple-50 to-purple-100 rounded-2xl p-6 text-center border border-purple-200">
+                    <div class="text-2xl font-bold text-gray-800 mb-2">{{ probability }}</div>
+                    <div class="text-sm text-purple-600 font-semibold">
+                        <i class="fas fa-chart-pie mr-1"></i>
+                        Probability
+                    </div>
+                </div>
+                
+                <div class="bg-gradient-to-br 
+                    {% if 'Low' in risk_level %}from-green-50 to-green-100 border-green-200
+                    {% elif 'Borderline' in risk_level %}from-yellow-50 to-yellow-100 border-yellow-200
+                    {% elif 'Intermediate' in risk_level %}from-orange-50 to-orange-100 border-orange-200
+                    {% elif 'High' in risk_level %}from-red-50 to-red-100 border-red-200
+                    {% else %}from-gray-50 to-gray-100 border-gray-200{% endif %} 
+                    rounded-2xl p-6 text-center border">
+                    <div class="text-2xl font-bold text-gray-800 mb-2">{{ risk_level }}</div>
+                    <div class="text-sm 
+                        {% if 'Low' in risk_level %}text-green-600
+                        {% elif 'Borderline' in risk_level %}text-yellow-600
+                        {% elif 'Intermediate' in risk_level %}text-orange-600
+                        {% elif 'High' in risk_level %}text-red-600
+                        {% else %}text-gray-600{% endif %} 
+                        font-semibold">
+                        <i class="fas fa-shield-alt mr-1"></i>
+                        Risk Level
+                    </div>
+                </div>
+
+                <div class="bg-gradient-to-br from-orange-50 to-orange-100 rounded-2xl p-6 text-center border border-orange-200">
+                    <div class="text-2xl font-bold text-gray-800 mb-2">{{ "%.1f"|format(heart_age) }} yrs</div>
+                    <div class="text-sm text-orange-600 font-semibold">
+                        <i class="fas fa-heartbeat mr-1"></i>
+                        Heart Age
+                    </div>
+                </div>
+            </div>
+            <!-- try -->
+             <!-- ======= ADD THE CLINICAL SUMMARY REPORT HERE ======= -->
+<div class="bg-white/80 backdrop-blur-lg rounded-2xl p-6 border border-gray-200 mb-8 no-print">
+    <h3 class="text-xl font-semibold text-gray-800 mb-4 flex items-center">
+        <i class="fas fa-file-medical text-blue-500 mr-2"></i>
+        Clinical Summary Report
+    </h3>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+            <h4 class="font-semibold text-gray-700 mb-3">Patient Demographics</h4>
+            <div class="space-y-2 text-sm">
+                <div class="flex justify-between">
+                    <span class="text-gray-600">Name:</span>
+                    <span class="font-medium">{{ patient_name }}</span>
+                </div>
+                {% if patient_id %}
+                <div class="flex justify-between">
+                    <span class="text-gray-600">Patient ID:</span>
+                    <span class="font-medium">{{ patient_id }}</span>
+                </div>
+                {% endif %}
+                <div class="flex justify-between">
+                    <span class="text-gray-600">Age:</span>
+                    <span class="font-medium">{{ form_data.age }} years</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-gray-600">Gender:</span>
+                    <span class="font-medium">{{ form_data.sex }}</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-gray-600">Assessment Date:</span>
+                    <span class="font-medium">{{ assessment_date }}</span>
+                </div>
+            </div>
+        </div>
+        <div>
+            <h4 class="font-semibold text-gray-700 mb-3">Key Findings</h4>
+            <div class="space-y-2 text-sm">
+                <div class="flex justify-between">
+                    <span class="text-gray-600">Cardiac Prediction:</span>
+                    <span class="font-medium {% if prediction == 'Yes' %}text-red-600{% else %}text-green-600{% endif %}">
+                        {{ prediction }}
+                    </span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-gray-600">Probability Score:</span>
+                    <span class="font-medium">{{ probability }}</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-gray-600">Risk Level:</span>
+                    <span class="font-medium {% if 'Low' in risk_level %}text-green-600{% elif 'High' in risk_level %}text-red-600{% else %}text-yellow-600{% endif %}">
+                        {{ risk_level }}
+                    </span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-gray-600">Heart Age:</span>
+                    <span class="font-medium">{{ "%.1f"|format(heart_age) }} years</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+           
+
+
+            <!-- try -->
+            {% if factors_considered and adjustment_applied and not error %}
+            <div class="bg-gradient-to-r from-blue-50 to-indigo-50 border-l-4 border-blue-500 rounded-2xl p-6 mb-8">
+                <div class="flex items-start">
+                    <div class="flex-shrink-0">
+                        <i class="fas fa-microscope text-blue-500 text-xl mt-1"></i>
+                    </div>
+                    <div class="ml-4">
+                        <h4 class="text-lg font-semibold text-blue-800 mb-3">Clinical Analysis Applied</h4>
+                        <div class="space-y-2 max-h-32 overflow-y-auto">
+                            {% for factor in factors_considered %}
+                            <div class="flex items-center bg-white/60 rounded-lg p-2 border border-blue-200">
+                                <i class="fas fa-check-circle text-green-500 mr-2 text-sm"></i>
+                                <span class="text-blue-700 text-xs">{{ factor }}</span>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Personalized Education -->
+            {% if personalized_advice %}
+            <div class="bg-gradient-to-r from-purple-50 to-pink-50 rounded-2xl p-6 mb-8 border border-purple-200">
+                <h3 class="text-xl font-semibold text-purple-800 mb-6 flex items-center">
+                    <i class="fas fa-graduation-cap text-purple-500 mr-2"></i>
+                    Personalized Health Guidance
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {% for advice in personalized_advice %}
+                    <div class="bg-white/60 rounded-xl p-4 border border-purple-200">
+                        <h5 class="font-semibold text-purple-700 mb-3 flex items-center">
+                            <i class="fas 
+                                {% if 'Heart' in advice.title %}fa-heart
+                                {% elif 'Blood' in advice.title %}fa-tint
+                                {% elif 'Cholesterol' in advice.title %}fa-apple-alt
+                                {% elif 'Exercise' in advice.title %}fa-running
+                                {% elif 'Stress' in advice.title %}fa-brain
+                                {% else %}fa-stethoscope{% endif %} 
+                                text-purple-500 mr-2">
+                            </i>
+                            {{ advice.title }}
+                        </h5>
+                        <ul class="space-y-2">
+                            {% for tip in advice.tips %}
+                            <li class="flex items-start text-sm text-gray-700">
+                                <i class="fas fa-check text-green-500 mr-2 mt-1 text-xs"></i>
+                                <span>{{ tip }}</span>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Risk Scale Guide -->
+            <div class="bg-gradient-to-r from-gray-50 to-slate-100 rounded-2xl p-6 mb-8 border border-gray-200">
+                <h4 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                    <i class="fas fa-info-circle text-purple-500 mr-2"></i>
+                    Understanding Your Risk Assessment
+                </h4>
+                <div class="space-y-3">
+                    <div class="flex items-center justify-between p-3 bg-white rounded-lg border">
+                        <div class="flex items-center">
+                            <div class="w-3 h-3 bg-green-500 rounded-full mr-3"></div>
+                            <span class="text-gray-700">Very Low Risk (<5%)</span>
+                        </div>
+                        <span class="text-sm text-gray-500">Maintain healthy lifestyle</span>
+                    </div>
+                    <div class="flex items-center justify-between p-3 bg-white rounded-lg border">
+                        <div class="flex items-center">
+                            <div class="w-3 h-3 bg-green-400 rounded-full mr-3"></div>
+                            <span class="text-gray-700">Low Risk (5-10%)</span>
+                        </div>
+                        <span class="text-sm text-gray-500">Routine follow-up recommended</span>
+                    </div>
+                    <div class="flex items-center justify-between p-3 bg-white rounded-lg border">
+                        <div class="flex items-center">
+                            <div class="w-3 h-3 bg-yellow-500 rounded-full mr-3"></div>
+                            <span class="text-gray-700">Borderline (10-20%)</span>
+                        </div>
+                        <span class="text-sm text-gray-500">Consider risk assessment</span>
+                    </div>
+                    <div class="flex items-center justify-between p-3 bg-white rounded-lg border">
+                        <div class="flex items-center">
+                            <div class="w-3 h-3 bg-orange-500 rounded-full mr-3"></div>
+                            <span class="text-gray-700">Intermediate (20-40%)</span>
+                        </div>
+                        <span class="text-sm text-gray-500">Further evaluation may help</span>
+                    </div>
+                    <div class="flex items-center justify-between p-3 bg-white rounded-lg border">
+                        <div class="flex items-center">
+                            <div class="w-3 h-3 bg-red-500 rounded-full mr-3"></div>
+                            <span class="text-gray-700">High Risk (>40%)</span>
+                        </div>
+                        <span class="text-sm text-gray-500">Medical evaluation recommended</span>
+                    </div>
+                </div>
+            </div>
+            <!-- ======= ADD ACTION BUTTONS HERE ======= -->
+<!-- Action Buttons -->
+<div class="flex flex-col sm:flex-row gap-4 justify-center no-print">
+    <a href="/form" class="group relative overflow-hidden bg-gradient-to-r from-red-600 to-pink-600 text-white py-4 px-8 rounded-2xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 text-center">
+        <span class="relative z-10 flex items-center justify-center">
+            <i class="fas fa-redo mr-3"></i>
+            New Assessment
+        </span>
+    </a>
+    <button onclick="window.print()" class="group relative overflow-hidden bg-gradient-to-r from-blue-600 to-purple-600 text-white py-4 px-8 rounded-2xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 text-center">
+        <span class="relative z-10 flex items-center justify-center">
+            <i class="fas fa-print mr-3"></i>
+            Print Report
+        </span>
+    </button>
+    <button onclick="downloadPDF()" class="group relative overflow-hidden bg-gradient-to-r from-green-600 to-teal-600 text-white py-4 px-8 rounded-2xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 text-center">
+        <span class="relative z-10 flex items-center justify-center">
+            <i class="fas fa-file-pdf mr-3"></i>
+            Save PDF
+        </span>
+    </button>
+    <a href="/" class="group relative overflow-hidden bg-gradient-to-r from-gray-600 to-gray-700 text-white py-4 px-8 rounded-2xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 text-center">
+        <span class="relative z-10 flex items-center justify-center">
+            <i class="fas fa-home mr-3"></i>
+            Back to Home
+        </span>
+    </a>
+</div>
+         
+
+
+        <!-- Footer Disclaimer -->
+        <div class="mt-8 text-center">
+            <p class="text-xs text-gray-500 bg-white/50 backdrop-blur-sm rounded-2xl p-4 border border-gray-200">
+                <i class="fas fa-exclamation-triangle text-yellow-500 mr-1"></i>
+                This assessment is based on statistical models and clinical guidelines. 
+                It is not a substitute for professional medical advice. 
+                Please consult with a healthcare provider for personal medical decisions.
+            </p>
+        </div>
+    </div>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script>
+async function downloadPDF() {
+    // Get the main content element
+    const element = document.getElementById('pdf-content') || document.querySelector('.max-w-6xl');
+    
+    if (!element) {
+        alert('Error: Could not find content to generate PDF');
+        return;
+    }
+    
+    // Get patient name from the page
+    const patientNameElement = document.querySelector('[data-patient-name]') || document.querySelector('h2.text-2xl');
+    const patientName = patientNameElement ? patientNameElement.textContent.trim() : 'Patient';
+    
+    // Show loading state
+    const button = event.target;
+    const originalHTML = button.innerHTML;
+    button.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Generating PDF...';
+    button.disabled = true;
+    
+    try {
+        // Create canvas from HTML content
+        const canvas = await html2canvas(element, {
+            scale: 2,
+            useCORS: true,
+            logging: false,
+            backgroundColor: '#ffffff',
+            removeContainer: true,
+            allowTaint: false,
+            foreignObjectRendering: false,
+            width: element.scrollWidth,
+            height: element.scrollHeight,
+            scrollX: 0,
+            scrollY: 0
+        });
+        
+        // Convert canvas to image data
+        const imgData = canvas.toDataURL('image/jpeg', 0.95);
+        
+        // Create PDF document
+        const pdf = new jspdf.jsPDF({
+            orientation: 'portrait',
+            unit: 'mm',
+            format: 'a4',
+            compress: true
+        });
+        
+        const pdfWidth = pdf.internal.pageSize.getWidth();
+        const pdfHeight = pdf.internal.pageSize.getHeight();
+        
+        // Calculate image dimensions to fit PDF
+        const imgWidth = canvas.width;
+        const imgHeight = canvas.height;
+        const ratio = Math.min(pdfWidth / imgWidth, pdfHeight / imgHeight);
+        const imgX = (pdfWidth - imgWidth * ratio) / 2;
+        const imgY = 15; // Add some top margin
+        
+        // Add image to PDF
+        pdf.addImage(imgData, 'JPEG', imgX, imgY, imgWidth * ratio, imgHeight * ratio);
+        
+        // Add professional header
+        pdf.setFontSize(16);
+        pdf.setTextColor(40, 40, 40);
+        pdf.text('HeartGuard Clinical Report', pdfWidth / 2, 10, { align: 'center' });
+        
+        // Add footer with patient info
+        pdf.setFontSize(10);
+        pdf.setTextColor(100, 100, 100);
+        pdf.text(`Patient: ${patientName}`, 20, pdfHeight - 10);
+        pdf.text(`Generated: ${new Date().toLocaleDateString()}`, pdfWidth - 20, pdfHeight - 10, { align: 'right' });
+        
+        // Generate filename
+        const fileName = `HeartGuard_Report_${patientName.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.pdf`;
+        
+        // Save PDF
+        pdf.save(fileName);
+        
+    } catch (error) {
+        console.error('PDF generation error:', error);
+        
+        // Fallback to browser print
+        alert('Using browser print as fallback...');
+        const printStyles = document.createElement('style');
+        printStyles.textContent = `
+            @media print {
+                body * {
+                    visibility: hidden;
+                }
+                #pdf-content, #pdf-content * {
+                    visibility: visible;
+                }
+                #pdf-content {
+                    position: absolute;
+                    left: 0;
+                    top: 0;
+                    width: 100%;
+                    background: white !important;
+                }
+                .no-print {
+                    display: none !important;
+                }
+                .bg-gradient-to-br { 
+                    background: white !important;
+                    background-image: none !important;
+                }
+                .backdrop-blur-lg { 
+                    backdrop-filter: none !important;
+                    background: white !important;
+                }
+                .shadow-2xl, .shadow-lg { 
+                    box-shadow: none !important;
+                }
+                .border { 
+                    border: 1px solid #ddd !important;
+                }
+                nav, button, .no-print { 
+                    display: none !important;
+                }
+            }
+        `;
+        document.head.appendChild(printStyles);
+        window.print();
+        setTimeout(() => {
+            document.head.removeChild(printStyles);
+        }, 1000);
+        
+    } finally {
+        // Restore button
+        button.innerHTML = originalHTML;
+        button.disabled = false;
+    }
+}
+
+// Enhanced print styles for better browser compatibility
+const style = document.createElement('style');
+style.textContent = `
+    @media print {
+        body * {
+            visibility: hidden;
+        }
+        #pdf-content, #pdf-content * {
+            visibility: visible;
+        }
+        #pdf-content {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            background: white !important;
+            padding: 20px;
+        }
+        .no-print {
+            display: none !important;
+        }
+        
+        /* Force white backgrounds for all elements */
+        .bg-gradient-to-br,
+        .bg-white\\/80,
+        .backdrop-blur-lg,
+        .bg-blue-50,
+        .bg-purple-50,
+        .bg-green-50,
+        .bg-orange-50,
+        .bg-emerald-50,
+        .bg-teal-50,
+        .bg-indigo-50,
+        .bg-pink-50,
+        .bg-gray-50,
+        .bg-slate-100 {
+            background: white !important;
+            background-image: none !important;
+        }
+        
+        /* Remove visual effects */
+        .backdrop-blur-lg {
+            backdrop-filter: none !important;
+        }
+        .shadow-2xl, .shadow-lg {
+            box-shadow: none !important;
+        }
+        .border {
+            border: 1px solid #e5e7eb !important;
+        }
+        
+        /* Hide interactive elements */
+        nav, button, .no-print {
+            display: none !important;
+        }
+        
+        /* Ensure text contrast */
+        .text-gray-500 { color: #6b7280 !important; }
+        .text-gray-600 { color: #4b5563 !important; }
+        .text-gray-700 { color: #374151 !important; }
+        .text-gray-800 { color: #1f2937 !important; }
+        
+        /* Page settings */
+        @page {
+            margin: 1.5cm;
+            size: A4;
+        }
+        
+        /* Print header */
+        .print-header {
+            display: block !important;
+            text-align: center;
+            border-bottom: 2px solid #e5e7eb;
+            padding-bottom: 15px;
+            margin-bottom: 25px;
+        }
+    }
+    
+    /* PDF-specific container styling */
+    #pdf-content {
+        background: white;
+    }
+`;
+document.head.appendChild(style);
+</script>
+</body>
+</html>

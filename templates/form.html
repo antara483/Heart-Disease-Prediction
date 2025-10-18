@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Patient Assessment - HeartGuard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-gradient-to-br from-blue-50 via-white to-purple-50 min-h-screen">
+   
+    <nav class="bg-white/80 backdrop-blur-lg border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center py-4">
+                <a href="/" class="flex items-center space-x-2 text-xl font-bold bg-gradient-to-r from-red-600 to-pink-600 bg-clip-text text-transparent">
+                    <i class="fas fa-heartbeat"></i>
+                    <span>HeartGuard</span>
+                </a>
+                <div class="flex items-center space-x-4">
+                    <span class="text-sm text-gray-600">Step 1 of 2</span>
+                    <div class="w-24 bg-gray-200 rounded-full h-2">
+                        <div class="bg-red-500 h-2 rounded-full w-1/2"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="max-w-4xl mx-auto px-4 py-8">
+        
+        <div class="text-center mb-8">
+            <h1 class="text-4xl font-bold bg-gradient-to-r from-red-600 to-pink-600 bg-clip-text text-transparent mb-4">
+                Patient Health Assessment
+            </h1>
+            <p class="text-gray-600 text-lg max-w-2xl mx-auto">
+                Provide the patient's health information for a comprehensive heart disease risk analysis using AI and clinical guidelines.
+            </p>
+        </div>
+
+        
+        <div class="bg-white/80 backdrop-blur-lg shadow-2xl rounded-3xl p-8 border border-white/20">
+            <form action="/predict" method="post" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Add this section after the opening form tag -->
+<div class="bg-white/80 backdrop-blur-lg rounded-2xl p-6 border border-gray-200 mb-6">
+    <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+        <i class="fas fa-user-circle text-blue-500 mr-2"></i>
+        Patient Information
+    </h3>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+            <label for="patient_name" class="block text-sm font-medium text-gray-700 mb-2">
+                Full Name <span class="text-red-500">*</span>
+            </label>
+            <input type="text" id="patient_name" name="patient_name" required
+                   class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+                   placeholder="Enter patient's full name">
+        </div>
+        <div>
+            <label for="patient_id" class="block text-sm font-medium text-gray-700 mb-2">
+                Patient ID (Optional)
+            </label>
+            <input type="text" id="patient_id" name="patient_id"
+                   class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+                   placeholder="Medical record number">
+        </div>
+    </div>
+</div>
+                
+                <div class="md:col-span-2">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                        <i class="fas fa-user-medical mr-2 text-red-500"></i>
+                        Basic Information
+                    </h3>
+                </div>
+
+               
+                <div class="space-y-1">
+                    <label class="text-sm font-medium text-gray-700 flex items-center">
+                        <i class="fas fa-birthday-cake mr-2 text-red-400"></i>
+                        Age
+                    </label>
+                    <input type="number" name="age" min="{{ ranges['age'][0] }}" max="{{ ranges['age'][1] }}" 
+                           class="w-full px-4 py-3 border border-gray-300 rounded-2xl focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-200"
+                           placeholder="Enter age" required>
+                </div>
+
+                <div class="space-y-1">
+                    <label class="text-sm font-medium text-gray-700 flex items-center">
+                        <i class="fas fa-tachometer-alt mr-2 text-blue-400"></i>
+                        Resting Blood Pressure
+                    </label>
+                    <!-- <input type="number" name="resting_blood_pressure" min="{{ ranges['resting_blood_pressure'][0] }}" max="{{ ranges['resting_blood_pressure'][1] }}"
+                           class="w-full px-4 py-3 border border-gray-300 rounded-2xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                           placeholder="mmHg" required> -->
+                    <input type="number" name="resting_blood_pressure" min="90" max="200"
+                           class="w-full px-4 py-3 border border-gray-300 rounded-2xl focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-200"
+                           placeholder="mmHg" required>       
+                </div>
+
+                <div class="space-y-1">
+                    <label class="text-sm font-medium text-gray-700 flex items-center">
+                        <i class="fas fa-vial mr-2 text-green-400"></i>
+                        Cholesterol
+                    </label>
+                    <input type="number" name="cholestoral" min="100" max="400"
+                            class="w-full px-4 py-3 border border-gray-300 rounded-2xl focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200"
+                            placeholder="mg/dL" required>
+                    <!-- <input type="number" name="cholestoral" min="{{ ranges['cholestoral'][0] }}" max="{{ ranges['cholestoral'][1] }}"
+                           class="w-full px-4 py-3 border border-gray-300 rounded-2xl focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200"
+                           placeholder="mg/dL" required> -->
+                </div>
+
+                <div class="space-y-1">
+                    <label class="text-sm font-medium text-gray-700 flex items-center">
+                        <i class="fas fa-heartbeat mr-2 text-pink-400"></i>
+                        Max Heart Rate
+                    </label>
+                    <!-- <input type="number" name="Max_heart_rate" min="{{ ranges['Max_heart_rate'][0] }}" max="{{ ranges['Max_heart_rate'][1] }}"
+                           class="w-full px-4 py-3 border border-gray-300 rounded-2xl focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-all duration-200"
+                           placeholder="BPM" required> -->
+                    <input type="number" name="Max_heart_rate" min="70" max="220"
+                           class="w-full px-4 py-3 border border-gray-300 rounded-2xl focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-all duration-200"
+                           placeholder="BPM" required>
+                </div>
+
+                <div class="space-y-1">
+                    <label class="text-sm font-medium text-gray-700 flex items-center">
+                        <i class="fas fa-chart-line mr-2 text-purple-400"></i>
+                        Oldpeak (ST Depression)
+                    </label>
+                    <input type="number" step="0.1" name="oldpeak" min="{{ ranges['oldpeak'][0] }}" max="{{ ranges['oldpeak'][1] }}" step="0.1"
+                           class="w-full px-4 py-3 border border-gray-300 rounded-2xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200"
+                           placeholder="0.0 - 6.5" required>
+                </div>
+
+                
+                <div class="md:col-span-2 mt-6">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                        <i class="fas fa-clipboard-list mr-2 text-blue-500"></i>
+                        Clinical Information
+                    </h3>
+                </div>
+
+                
+                <div class="space-y-1">
+                    <label class="text-sm font-medium text-gray-700 flex items-center">
+                        <i class="fas fa-venus-mars mr-2 text-indigo-400"></i>
+                        Sex
+                    </label>
+                    <select name="sex" class="w-full px-4 py-3 border border-gray-300 rounded-2xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200">
+                        <option>Male</option>
+                        <option>Female</option>
+                    </select>
+                </div>
+
+                <div class="space-y-1">
+                    <label class="text-sm font-medium text-gray-700 flex items-center">
+                        <i class="fas fa-syringe mr-2 text-orange-400"></i>
+                        Fasting Blood Sugar
+                    </label>
+                    <select name="fasting_blood_sugar" class="w-full px-4 py-3 border border-gray-300 rounded-2xl focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200">
+                        <option>Lower than 120 mg/ml</option>
+                        <option>Greater than 120 mg/ml</option>
+                    </select>
+                </div>
+
+               
+                <div class="space-y-1">
+                    <label class="text-sm font-medium text-gray-700 flex items-center">
+                        <i class="fas fa-running mr-2 text-red-400"></i>
+                        Exercise Induced Angina
+                    </label>
+                    <select name="exercise_induced_angina" class="w-full px-4 py-3 border border-gray-300 rounded-2xl focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-200">
+                        <option>No</option>
+                        <option>Yes</option>
+                    </select>
+                </div>
+
+                <div class="space-y-1">
+                    <label class="text-sm font-medium text-gray-700 flex items-center">
+                        <i class="fas fa-lungs mr-2 text-teal-400"></i>
+                        Chest Pain Type
+                    </label>
+                    <select name="chest_pain_type" class="w-full px-4 py-3 border border-gray-300 rounded-2xl focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-200">
+                        <option>typical_angina</option>
+                        <option>atypical_angina</option>
+                        <option>non_anginal_pain</option>
+                        <option>asymptomatic</option>
+                    </select>
+                </div>
+
+                
+                <div class="space-y-1">
+                    <label class="text-sm font-medium text-gray-700 flex items-center">
+                        <i class="fas fa-heart mr-2 text-pink-400"></i>
+                        Rest ECG
+                    </label>
+                    <select name="rest_ecg" class="w-full px-4 py-3 border border-gray-300 rounded-2xl focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-all duration-200">
+                        <option>normal</option>
+                        <option>st_t_wave_abnormality</option>
+                        <option>left_ventricular_hypertrophy</option>
+                    </select>
+                </div>
+
+                <div class="space-y-1">
+                    <label class="text-sm font-medium text-gray-700 flex items-center">
+                        <i class="fas fa-wave-square mr-2 text-blue-400"></i>
+                        Slope
+                    </label>
+                    <select name="slope" class="w-full px-4 py-3 border border-gray-300 rounded-2xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200">
+                        <option>upsloping</option>
+                        <option>flat</option>
+                        <option>downsloping</option>
+                    </select>
+                </div>
+
+                
+                <div class="space-y-1">
+                    <label class="text-sm font-medium text-gray-700 flex items-center">
+                        <i class="fas fa-dna mr-2 text-purple-400"></i>
+                        Thalassemia
+                    </label>
+                    <select name="thalassemia" class="w-full px-4 py-3 border border-gray-300 rounded-2xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200">
+                        <option>normal</option>
+                        <option>fixed_defect</option>
+                        <option>reversible_defect</option>
+                    </select>
+                </div>
+
+                <div class="space-y-1">
+                    <label class="text-sm font-medium text-gray-700 flex items-center">
+                        <i class="fas fa-eye mr-2 text-green-400"></i>
+                        Vessels Colored by Fluoroscopy
+                    </label>
+                    <select name="vessels_colored_by_flourosopy" class="w-full px-4 py-3 border border-gray-300 rounded-2xl focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200">
+                        <option>Zero</option>
+                        <option>One</option>
+                        <option>Two</option>
+                        <option>Three</option>
+                    </select>
+                </div>
+
+               
+                <div class="md:col-span-2 text-center mt-8">
+                    <button type="submit" class="group relative overflow-hidden bg-gradient-to-r from-red-600 to-pink-600 text-white w-full md:w-auto py-4 px-12 rounded-2xl font-semibold text-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
+                        <span class="relative z-10 flex items-center justify-center">
+                            <i class="fas fa-chart-bar mr-3"></i>
+                            Analyze Risk Assessment
+                        </span>
+                        <div class="absolute inset-0 bg-gradient-to-r from-red-700 to-pink-700 transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-300"></div>
+                    </button>
+                </div>
+            </form>
+        </div>
+
+      
+        <div class="text-center mt-6">
+            <a href="/" class="inline-flex items-center text-gray-600 hover:text-gray-800 transition-colors duration-200">
+                <i class="fas fa-arrow-left mr-2"></i>
+                Back to Home
+            </a>
+        </div>
+    </div>
+</body>
+</html>
+
+
