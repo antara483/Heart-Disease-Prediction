@@ -236,4 +236,10 @@ Two: Moderate disease in multiple arteries
 
 Three: Severe multi-vessel disease
 
-#### Medical insight: This is a direct measure of coronary artery blockage severity.
+### Actual ↓ / Predicted → | No Disease (0) | Disease (1)
+
+No Disease (0)         | 11 (TN)        | 11 (FP)
+
+Disease (1)            | 1 (FN)         | 1 (TP)
+
+
