@@ -9,7 +9,7 @@ Here’s how the Home Page looks:
 
 And here’s a very low risk report:
 
-![Very Low Risk Report](images/A%20Very%20Low%20Risk%20Report.png)
+![Very low Risk Report](images/A%20Very%20low%20risk%20Report.png)
 
 
 ## 🚀 Features
