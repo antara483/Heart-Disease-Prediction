@@ -96,88 +96,6 @@ def clean_data(df: pd.DataFrame) -> pd.DataFrame:
 
     return df
 
-# ====== EVIDENCE-BASED RISK ADJUSTMENT ======
-# def evidence_based_risk_adjustment(input_data, raw_probability):
-#     age = float(input_data['age'].iloc[0])
-#     bp = float(input_data['resting_blood_pressure'].iloc[0])
-#     cholesterol = float(input_data['cholestoral'].iloc[0])
-#     max_hr = float(input_data['Max_heart_rate'].iloc[0])
-#     oldpeak = float(input_data['oldpeak'].iloc[0])
-#     exang = int(input_data['exercise_induced_angina'].iloc[0])
-#     sex = int(input_data['sex'].iloc[0])
-#     fbs = int(input_data['fasting_blood_sugar'].iloc[0])
-
-#     adjustment_multiplier = 1.0
-#     adjustment_factors = []
-
-#     # Age
-#     if age < 35:
-#         adjustment_multiplier *= 0.2
-#         adjustment_factors.append("Very young age (<35): 80% risk reduction")
-#     elif age < 45:
-#         adjustment_multiplier *= 0.4
-#         adjustment_factors.append("Young age (35-44): 60% risk reduction")
-#     elif age < 55:
-#         adjustment_multiplier *= 0.7
-#         adjustment_factors.append("Middle age (45-54): 30% risk reduction")
-
-#     # Blood pressure
-#     if bp < 120:
-#         adjustment_multiplier *= 0.6
-#         adjustment_factors.append("Optimal BP (<120 mmHg): 40% risk reduction")
-#     elif bp < 130:
-#         adjustment_multiplier *= 0.8
-#         adjustment_factors.append("Normal BP (120-129 mmHg): 20% risk reduction")
-#     if bp > 180:
-#         adjustment_multiplier *= 2.0
-#         adjustment_factors.append("Stage 3 Hypertension (>180 mmHg): 100% risk increase")
-
-#     # Cholesterol
-#     if cholesterol < 200:
-#         adjustment_multiplier *= 0.7
-#         adjustment_factors.append("Desirable cholesterol (<200 mg/dL): 30% risk reduction")
-#     if cholesterol > 240:
-#         adjustment_multiplier *= 1.5
-#         adjustment_factors.append("High cholesterol (>240 mg/dL): 50% risk increase")
-
-#     # Exercise capacity
-#     if max_hr > 140 and exang == 0:
-#         adjustment_multiplier *= 0.5
-#         adjustment_factors.append("Good exercise capacity, no angina: 50% risk reduction")
-#     if exang == 1:
-#         adjustment_multiplier *= 2.0
-#         adjustment_factors.append("Exercise-induced angina: 100% risk increase")
-
-#     # ST depression (oldpeak)
-#     if oldpeak < 0.5:
-#         adjustment_multiplier *= 0.7
-#         adjustment_factors.append("Minimal ST depression (<0.5mm): 30% risk reduction")
-#     if oldpeak > 2.0:
-#         adjustment_multiplier *= 2.0
-#         adjustment_factors.append("Significant ST depression (>2.0mm): 100% risk increase")
-
-#     # Gender
-#     if sex == 0 and age < 55:
-#         adjustment_multiplier *= 0.6
-#         adjustment_factors.append("Pre-menopausal female: 40% risk reduction")
-
-#     # Blood sugar
-#     if fbs == 0:
-#         adjustment_multiplier *= 0.8
-#         adjustment_factors.append("Normal fasting glucose: 20% risk reduction")
-
-#     # Compute final adjusted probability
-#     adjusted_prob = raw_probability * adjustment_multiplier
-#     adjusted_prob = max(0.01, min(adjusted_prob, 0.95))  # bounds
-#     significant_adjustment = abs(raw_probability - adjusted_prob) > 0.2
-
-#     return {
-#         'adjusted_probability': adjusted_prob,
-#         'adjustment_factors': adjustment_factors,
-#         'adjustment_multiplier': adjustment_multiplier,
-#         'significant_adjustment': significant_adjustment,
-#         'final_prediction': 1 if adjusted_prob > 0.5 else 0
-#     }
 
 def evidence_based_risk_adjustment(input_data, raw_probability):
     # Safely extract values with NaN handling
@@ -286,6 +204,7 @@ def evidence_based_risk_adjustment(input_data, raw_probability):
         'significant_adjustment': significant_adjustment,
         'final_prediction': 1 if adjusted_prob > 0.5 else 0
     }
+
 # ====== HELPER FUNCTIONS ======
 def get_risk_level(probability):
     if probability < 0.05:
@@ -324,56 +243,6 @@ def validate_input_data(input_dict):
             raise ValueError(f"Invalid value for {field}: {value}")
     
     return True
-# class RealTimeCalculator:
-#     def __init__(self):
-#         self.risk_factors = {}
-    
-#     def calculate_heart_age(self, input_data):
-#         """Calculate heart age based on risk factors"""
-#         chronological_age = input_data['age']
-#         heart_age = chronological_age
-        
-#         # Risk adjustments
-#         if input_data['resting_blood_pressure'] > 140:
-#             heart_age += 5
-#         if input_data['cholestoral'] > 240:
-#             heart_age += 4
-#         if input_data['exercise_induced_angina'] == 1:
-#             heart_age += 7
-#         if input_data['oldpeak'] > 2.0:
-#             heart_age += 3
-            
-#         return max(chronological_age, heart_age)
-    
-#     def calculate_risk_score(self, input_data):
-#         """Calculate Framingham-like risk score"""
-#         score = 0
-        
-#         # Age
-#         age = input_data['age']
-#         if age >= 60: score += 8
-#         elif age >= 50: score += 6
-#         elif age >= 40: score += 4
-        
-#         # Blood Pressure
-#         bp = input_data['resting_blood_pressure']
-#         if bp >= 160: score += 5
-#         elif bp >= 140: score += 3
-#         elif bp >= 130: score += 1
-        
-#         # Cholesterol
-#         chol = input_data['cholestoral']
-#         if chol >= 240: score += 4
-#         elif chol >= 200: score += 2
-        
-#         # Other factors
-#         if input_data['exercise_induced_angina'] == 1: score += 3
-#         if input_data['oldpeak'] > 2.0: score += 2
-#         if input_data['fasting_blood_sugar'] == 1: score += 2
-        
-#         return min(score, 20)  # Max score 20
-
-#         # Add to main.py
 
 
 # ====== REAL-TIME CALCULATOR ======
