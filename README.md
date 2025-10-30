@@ -3,6 +3,14 @@
 A machine learning project for predicting the likelihood of heart disease based on patient medical attributes and lifestyle factors.
 
 Overview
+Here’s how the Home Page looks:
+
+![Home Page](images/Home%20Page.png)
+
+And here’s a very low risk report:
+
+![Very Low Risk Report](images/A%20Very%20Low%20Risk%20Report.png)
+
 
 ## 🚀 Features
 🤖 Machine Learning: Ensemble model (Random Forest + Logistic Regression) with 80.3% accuracy
