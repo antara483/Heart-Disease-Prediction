@@ -1,3 +1,9 @@
+# ❤️Heart Disease Prediction
+
+A machine learning project for predicting the likelihood of heart disease based on patient medical attributes and lifestyle factors.
+
+Overview
+
 ## 🚀 Features
 🤖 Machine Learning: Ensemble model (Random Forest + Logistic Regression) with 80.3% accuracy
 
@@ -242,4 +248,5 @@ No Disease (0)         | 11 (TN)        | 11 (FP)
 
 Disease (1)            | 1 (FN)         | 1 (TP)
 
+Disclaimer: This project is for educational and research purposes only. It should not be used as a substitute for professional medical advice, diagnosis, or treatment. Always seek the advice of qualified healthcare providers with any questions you may have regarding medical conditions.
 
